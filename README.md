@@ -1,44 +1,41 @@
 # EstWarden Integrations
 
-Community integration examples for [EstWarden](https://estwarden.eu) — the Baltic Security Intelligence platform. Use these to connect EstWarden data to your tools, dashboards, assistants, and automations.
+Community integration examples for [EstWarden](https://estwarden.eu) — the Baltic Security Intelligence platform. Connect threat data to your tools, dashboards, assistants, and automations.
 
 ## Integrations
 
 | Integration | What it does | Status |
 |---|---|---|
-| [**MCP Server**](mcp-server/) | Model Context Protocol server — any LLM can query threat data, signals, narratives | ✅ Ready |
-| [**Grafana Dashboards**](grafana/) | Pre-built dashboards for collector health, signal flow, threat index | ✅ Ready |
-| [**Home Assistant**](home-assistant/) | Threat level sensor, Baltic security card, automations on threat changes | ✅ Ready |
-| [**Telegram Bot**](telegram-bot/) | Query threat level, subscribe to alerts, get daily briefings | 📦 Example |
-| [**n8n Workflows**](n8n-workflows/) | Visual automation — connect EstWarden to Slack, Email, Notion, etc. | 📦 Example |
-| [**CLI Tool**](cli/) | Command-line interface for querying EstWarden public API | 📦 Example |
-| [**Obsidian Plugin**](obsidian-plugin/) | Daily threat notes in your Obsidian vault | 💡 Concept |
-| [**Examples**](examples/) | Code snippets for Python, Go, JavaScript, curl | ✅ Ready |
+| [**OpenClaw Skill**](openclaw-skill/) | AI assistant skill — threat level, reports, narratives, campaigns | ✅ Ready |
+| [**MCP Server**](mcp-server/) | Model Context Protocol — any LLM queries threat data | ✅ Ready |
+| [**Grafana Dashboards**](grafana/) | Threat overview + collector health dashboards | ✅ Ready |
+| [**Home Assistant**](home-assistant/) | Smart home sensors, automations on threat changes | ✅ Ready |
+| [**Telegram Bot**](telegram-bot/) | Query threats from Telegram (/threat, /report, /narr) | ✅ Ready |
+| [**CLI**](cli/) | Terminal threat queries — `estwarden threat` | ✅ Ready |
+| [**n8n Workflows**](n8n-workflows/) | Slack briefing, email alerts, visual automation | ✅ Ready |
+| [**Obsidian Plugin**](obsidian-plugin/) | Daily threat notes in your vault | 💡 Concept |
+| [**Examples**](examples/) | Python, Go, JavaScript code snippets | ✅ Ready |
 
 ## Public API
 
-All integrations use the EstWarden public API:
+All integrations use the public API. No key required.
 
 ```
-GET https://estwarden.eu/api/today          — today's threat report
-GET https://estwarden.eu/api/threat-index   — current CTI score + level
-GET https://estwarden.eu/api/history?days=30 — threat level history
-GET https://estwarden.eu/api/influence/latest — influence ecosystem
+GET https://estwarden.eu/api/threat-index       — CTI score + level
+GET https://estwarden.eu/api/today              — daily report
+GET https://estwarden.eu/api/report/{date}      — historical report
+GET https://estwarden.eu/api/history?days=30    — threat trend
 GET https://estwarden.eu/api/influence/narratives — narrative activity
-GET https://estwarden.eu/api/influence/campaigns — active campaigns
-GET https://estwarden.eu/api/trends         — trend analysis
-GET https://estwarden.eu/api/space-weather  — space weather data
-GET https://estwarden.eu/api/ioda           — internet outage data
-GET https://estwarden.eu/health             — service health
-GET https://estwarden.eu/feed.xml           — RSS feed
+GET https://estwarden.eu/api/influence/campaigns  — influence campaigns
+GET https://estwarden.eu/api/trends             — trend analysis
+GET https://estwarden.eu/feed.xml               — RSS feed
+GET https://estwarden.eu/health                 — service health
 ```
-
-No API key required. No rate limiting (be reasonable). JSON responses.
 
 ## Contributing
 
-Add your integration! Fork, create a directory, add a README with setup instructions, submit a PR.
+Add your integration — fork, create a directory, submit a PR.
 
 ## License
 
-MIT — all integrations are independently licensed by their authors.
+MIT
