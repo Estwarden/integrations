@@ -1,0 +1,26 @@
+{
+  "name": "EstWarden Threat Level Alert",
+  "nodes": [
+    {"name": "Poll", "type": "n8n-nodes-base.scheduleTrigger",
+     "parameters": {"rule": {"interval": [{"field": "minutes", "minutesInterval": 15}]}},
+     "position": [100, 200]},
+    {"name": "Get Level", "type": "n8n-nodes-base.httpRequest",
+     "parameters": {"url": "https://estwarden.eu/api/threat-index", "method": "GET"},
+     "position": [300, 200]},
+    {"name": "Check Change", "type": "n8n-nodes-base.if",
+     "parameters": {"conditions": {"string": [
+       {"value1": "={{ $json.level }}", "operation": "notEqual",
+        "value2": "={{ $('Get Level').first().json._previousLevel || $json.level }}"}
+     ]}},
+     "position": [500, 200]},
+    {"name": "Email Alert", "type": "n8n-nodes-base.emailSend",
+     "parameters": {"subject": "🛡 Baltic Threat Level Changed: {{ $json.level }}",
+       "text": "Threat level changed to {{ $json.level }} ({{ $json.score }}/100)\n\nhttps://estwarden.eu"},
+     "position": [700, 200]}
+  ],
+  "connections": {
+    "Poll": {"main": [[{"node": "Get Level"}]]},
+    "Get Level": {"main": [[{"node": "Check Change"}]]},
+    "Check Change": {"main": [[{"node": "Email Alert"}]]}
+  }
+}

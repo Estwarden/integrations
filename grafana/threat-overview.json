@@ -1,0 +1,29 @@
+{
+  "title": "EstWarden Threat Overview",
+  "uid": "estwarden-threat",
+  "timezone": "Europe/Tallinn",
+  "refresh": "5m",
+  "panels": [
+    {"id":1,"title":"Threat Level","type":"stat","gridPos":{"h":6,"w":6,"x":0,"y":0},
+     "datasource":"estwarden-api",
+     "targets":[{"url":"https://estwarden.eu/api/threat-index","fields":[{"jsonPath":"$.level"}]}],
+     "fieldConfig":{"defaults":{"mappings":[
+       {"type":"value","options":{"GREEN":{"text":"🟢 GREEN","color":"green"}}},
+       {"type":"value","options":{"YELLOW":{"text":"🟡 YELLOW","color":"yellow"}}},
+       {"type":"value","options":{"ORANGE":{"text":"🟠 ORANGE","color":"orange"}}},
+       {"type":"value","options":{"RED":{"text":"🔴 RED","color":"red"}}}
+     ]}}},
+    {"id":2,"title":"CTI Score","type":"gauge","gridPos":{"h":6,"w":6,"x":6,"y":0},
+     "datasource":"estwarden-api",
+     "targets":[{"url":"https://estwarden.eu/api/threat-index","fields":[{"jsonPath":"$.score"}]}],
+     "fieldConfig":{"defaults":{"min":0,"max":100,"thresholds":{"steps":[
+       {"value":0,"color":"green"},{"value":25,"color":"yellow"},
+       {"value":50,"color":"orange"},{"value":75,"color":"red"}]}}}},
+    {"id":3,"title":"30-Day History","type":"timeseries","gridPos":{"h":8,"w":24,"x":0,"y":6},
+     "datasource":"estwarden-api",
+     "targets":[{"url":"https://estwarden.eu/api/history?days=30",
+       "fields":[{"jsonPath":"$[*].date","name":"Date","type":"time"},
+                 {"jsonPath":"$[*].score","name":"Score"}]}]}
+  ],
+  "_setup": "Install JSON API plugin: grafana-cli plugins install marcusolsson-json-datasource. Add datasource: URL=https://estwarden.eu, no auth."
+}

@@ -1,0 +1,31 @@
+{
+  "name": "EstWarden Daily Slack Briefing",
+  "nodes": [
+    {"name": "Schedule", "type": "n8n-nodes-base.scheduleTrigger",
+     "parameters": {"rule": {"interval": [{"triggerAtHour": 8}]}},
+     "position": [100, 200]},
+    {"name": "Get Report", "type": "n8n-nodes-base.httpRequest",
+     "parameters": {"url": "https://estwarden.eu/api/today", "method": "GET",
+       "responseFormat": "json"},
+     "position": [300, 200]},
+    {"name": "Get Threat", "type": "n8n-nodes-base.httpRequest",
+     "parameters": {"url": "https://estwarden.eu/api/threat-index", "method": "GET",
+       "responseFormat": "json"},
+     "position": [300, 350]},
+    {"name": "Format", "type": "n8n-nodes-base.set",
+     "parameters": {"values": {"string": [
+       {"name": "text", "value": "🛡 *Baltic Security Brief*\n*{{ $('Get Threat').item.json.level }}* — CTI: {{ $('Get Threat').item.json.score }}/100\n\n{{ $('Get Report').item.json.summary }}\n\n<https://estwarden.eu|Full Report →>"}
+     ]}},
+     "position": [500, 275]},
+    {"name": "Slack", "type": "n8n-nodes-base.slack",
+     "parameters": {"channel": "#security", "text": "={{ $json.text }}",
+       "otherOptions": {"mrkdwn": true}},
+     "position": [700, 275]}
+  ],
+  "connections": {
+    "Schedule": {"main": [[{"node": "Get Report"}, {"node": "Get Threat"}]]},
+    "Get Report": {"main": [[{"node": "Format"}]]},
+    "Get Threat": {"main": [[{"node": "Format"}]]},
+    "Format": {"main": [[{"node": "Slack"}]]}
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "domain": "estwarden",
+  "name": "EstWarden Baltic Security",
+  "documentation": "https://github.com/Estwarden/integrations/tree/main/home-assistant",
+  "dependencies": [],
+  "codeowners": [],
+  "requirements": [],
+  "version": "1.0.0",
+  "iot_class": "cloud_polling"
+}

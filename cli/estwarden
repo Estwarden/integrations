@@ -1,0 +1,55 @@
+#!/bin/bash
+# estwarden — CLI for querying Baltic threat intelligence
+# Usage: estwarden [threat|report|narratives|campaigns|history|signals]
+
+API="https://estwarden.eu"
+
+case "${1:-threat}" in
+  threat|t)
+    curl -s "$API/api/threat-index" | python3 -c "
+import sys,json; d=json.load(sys.stdin)
+emoji={'GREEN':'🟢','YELLOW':'🟡','ORANGE':'🟠','RED':'🔴'}.get(d.get('level',''),'⚪')
+print(f\"{emoji} {d.get('level','?')} — CTI: {d.get('score',0):.1f}/100 ({d.get('date','?')})\")"
+    ;;
+  report|r)
+    date="${2:-$(date +%Y-%m-%d)}"
+    curl -s "$API/api/report/$date" | python3 -c "
+import sys,json; d=json.load(sys.stdin)
+print(f\"Date: {d.get('date','?')} | Level: {d.get('threat_level',d.get('level','?'))}\")
+print(f\"\n{d.get('summary','No report')}\")
+for i in d.get('indicators',[]):
+    print(f\"  [{i['status']}] {i['category']}/{i['label']}: {i['finding']}\")"
+    ;;
+  narratives|narr|n)
+    curl -s "$API/api/influence/narratives?days=${2:-7}" | python3 -c "
+import sys,json; d=json.load(sys.stdin)
+items=d if isinstance(d,list) else d.get('narratives',[])
+codes={'N1':'Russophobia','N2':'War Panic','N3':'Aid=Theft','N4':'Delegitimize','N5':'Victimhood'}
+for i in items: print(f\"  {i.get('code','?'):3s} ({codes.get(i.get('code',''),'?'):15s}): {i.get('count',0)} signals\")"
+    ;;
+  campaigns|camps|c)
+    curl -s "$API/api/influence/campaigns?days=${2:-30}" | python3 -c "
+import sys,json; d=json.load(sys.stdin)
+items=d if isinstance(d,list) else d.get('campaigns',[])
+for c in items[:10]: print(f\"  [{c.get('severity','?'):8s}] {c.get('name','?')}\n           {c.get('summary','')[:100]}\n\")"
+    ;;
+  history|h)
+    curl -s "$API/api/history?days=${2:-14}" | python3 -c "
+import sys,json; d=json.load(sys.stdin)
+items=d if isinstance(d,list) else d.get('history',[])
+for e in items: print(f\"  {e.get('date','?')} {e.get('level','?'):8s} {e.get('score',0):5.1f}/100\")"
+    ;;
+  health)
+    curl -s "$API/health" | python3 -m json.tool
+    ;;
+  *)
+    echo "Usage: estwarden [threat|report|narratives|campaigns|history|health]"
+    echo ""
+    echo "  threat               Current threat level + CTI score"
+    echo "  report [date]        Daily intelligence report"
+    echo "  narratives [days]    Active disinformation narratives"
+    echo "  campaigns [days]     Detected influence campaigns"
+    echo "  history [days]       Threat level history"
+    echo "  health               API health check"
+    ;;
+esac

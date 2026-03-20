@@ -1,0 +1,74 @@
+{
+  "dashboard": {
+    "title": "EstWarden Threat Overview",
+    "uid": "estwarden-public",
+    "timezone": "Europe/Tallinn",
+    "refresh": "5m",
+    "annotations": {"list": []},
+    "panels": [
+      {
+        "title": "Threat Level",
+        "type": "stat",
+        "gridPos": {"h": 6, "w": 8, "x": 0, "y": 0},
+        "datasource": {"type": "marcusolsson-json-datasource"},
+        "targets": [
+          {
+            "url": "https://estwarden.eu/api/threat-index",
+            "fields": [{"jsonPath": "$.level", "name": "Level"}]
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {"type": "value", "options": {"GREEN": {"text": "🟢 GREEN", "color": "green"}}},
+              {"type": "value", "options": {"YELLOW": {"text": "🟡 YELLOW", "color": "yellow"}}},
+              {"type": "value", "options": {"ORANGE": {"text": "🟠 ORANGE", "color": "orange"}}},
+              {"type": "value", "options": {"RED": {"text": "🔴 RED", "color": "red"}}}
+            ]
+          }
+        }
+      },
+      {
+        "title": "CTI Score",
+        "type": "gauge",
+        "gridPos": {"h": 6, "w": 8, "x": 8, "y": 0},
+        "datasource": {"type": "marcusolsson-json-datasource"},
+        "targets": [
+          {
+            "url": "https://estwarden.eu/api/threat-index",
+            "fields": [{"jsonPath": "$.score", "name": "Score"}]
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0, "max": 100,
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 25, "color": "yellow"},
+                {"value": 50, "color": "orange"},
+                {"value": 75, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Threat History (30 days)",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 6},
+        "datasource": {"type": "marcusolsson-json-datasource"},
+        "targets": [
+          {
+            "url": "https://estwarden.eu/api/history?days=30",
+            "fields": [
+              {"jsonPath": "$[*].date", "name": "Date"},
+              {"jsonPath": "$[*].score", "name": "CTI Score"}
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "_note": "Requires the JSON API datasource plugin: grafana-cli plugins install marcusolsson-json-datasource"
+}
